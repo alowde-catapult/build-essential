@@ -13,10 +13,4 @@ describe 'build-essential::_windows' do
     expect(chef_run).to create_directory("#{prefix}/tool32")
     expect(chef_run).to create_directory("#{prefix}/tool64")
   end
-
-  it 'removes legacy compiler toolchain' do
-    allow(::File).to receive(:exist?).and_call_original
-    allow(::File).to receive(:exist?).with(/msys/).and_return(true)
-    expect(chef_run).to delete_directory(/Remove legacy compiler/).with(path: /msys/, recursive: true)
-  end
 end

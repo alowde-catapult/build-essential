@@ -81,22 +81,3 @@ potentially_at_compile_time do
     root tool64_path
   end
 end
-
-# Clear out legacy compiler installation if present.
-# TODO: Remove this once all jenkins nodes have been converged with new changes
-# at least once.
-potentially_at_compile_time do
-  legacy_path = node['build-essential']['msys']['path'] if node['build-essential']['msys']
-  unless legacy_path.nil?
-    Chef::Log.warn(
-      'node[build-essential][msys][path] is deprecated - use node[build-essential][mingw][prefix] instead')
-  end
-  legacy_path ||= "#{ENV['SYSTEMDRIVE']}\\msys"
-
-  directory "Remove legacy compiler toolchain at #{legacy_path}" do
-    path legacy_path
-    action :delete
-    recursive true
-    only_if { ::File.exist?(legacy_path) }
-  end
-end
