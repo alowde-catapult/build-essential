@@ -18,4 +18,7 @@
 #
 
 default['build-essential']['compile_time'] = false
-default['build-essential']['msys']['path'] = "#{ENV['SYSTEMDRIVE']}\\msys"
+default['build-essential']['mingw']['prefix'] = "#{ENV['SYSTEMDRIVE']}\\mingw"
+
+# Change the defaults on pre-requisite cookbooks.
+default['seven_zip']['syspath'] = true

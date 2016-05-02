@@ -28,10 +28,10 @@ Installs packages required for compiling C software from source. Use this cookbo
 
 ## Attributes
 
-Attribute                                 | Default                      | Description
------------------------------------------ | :--------------------------: | -----------------------------------
-`node['build-essential']['compile_time']` | `false`                      | Execute resources at compile time
-`node['build-essential']['msys']['path']` | `#{ENV['SYSTEMDRIVE']\\msys` | Destination for msys (Windows only)
+Attribute                                    | Default                       | Description
+-------------------------------------------- | :---------------------------: | -----------------------------------
+`node['build-essential']['compile_time']`    | `false`                       | Execute resources at compile time
+`node['build-essential']['mingw']['prefix']` | `#{ENV['SYSTEMDRIVE']\\mingw` | Destination for mingw compiler toolchain (Windows only)
 
 ## Usage
 
