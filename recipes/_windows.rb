@@ -58,11 +58,9 @@ potentially_at_compile_time do
     root base_path
   end
 
-  directory tool32_path do
-  end
+  directory tool32_path
 
-  directory tool64_path do
-  end
+  directory tool64_path
 
   ruby_block 'copy base files into tool32 and tool64' do
     block do
