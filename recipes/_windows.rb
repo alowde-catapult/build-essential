@@ -17,67 +17,67 @@
 # limitations under the License.
 #
 
+node.default['seven_zip']['syspath'] = true
 include_recipe 'seven_zip::default'
 
-# The general layout is as such:
-# + mingw-prefix
-# |-  base   - holds common 32 and 64-bit msys packages.  Files from here are
-# |            copied into locations below.
-# |+  tool32 - 32-bit toolchain.
-#  |- .cache - holds temporary tar files and fetches/extracted packages.
-# |+  tool64 - 64-bit toolchain.
-#  |- .cache - holds temporary tar files and fetches/extracted packages.
-#
-# TODO: See if one can use /etc/fstab in base to mount tool32/tool64 as needed
-# instead of copying all the time.
+tool32_path = node['build-essential']['mingw32']['path'] if node['build-essential']['mingw32']
+tool64_path = node['build-essential']['mingw64']['path'] if node['build-essential']['mingw64']
 
-prefix = node['build-essential']['mingw']['prefix']
-base_path = ::File.join(prefix, 'base')
-tool32_path = ::File.join(prefix, 'tool32')
-tool64_path = ::File.join(prefix, 'tool64')
+[tool32_path, tool64_path].compact.each do |tool_path|
+  potentially_at_compile_time do
+    directory tool_path do
+      action :create
+      recursive true
+    end
 
-potentially_at_compile_time do
-  directory 'mingw root directory' do
-    path prefix
-    action :create
-    recursive true
+    mingw_get "msys core in #{tool_path}" do
+      package 'msys-base=2013072300-msys-bin.meta'
+      root tool_path
+    end
+
+    mingw_get "msys core extensions in #{tool_path}" do
+      package 'msys-coreutils-ext=5.97-3-*'
+      root tool_path
+    end
+
+    mingw_get "msys perl in #{tool_path}" do
+      package 'msys-perl-bin=5.8.8-*'
+      root tool_path
+    end
+
+    mingw_get "msys patch in #{tool_path}" do
+      package 'msys-patch-bin=2.6.1-*'
+      root tool_path
+    end
+
+    mingw_get "bsdtar in #{tool_path}" do
+      package 'mingw32-bsdtar-bin=2.8.3-*'
+      root tool_path
+    end
+
+    remote_file "#{tool_path}\\bin\\tar.exe" do
+      source "file:///#{tool_path.gsub('\\', '/')}/bin/bsdtar.exe"
+    end
+
   end
+end
 
-  mingw_get 'msys core' do
-    package 'msys-base=2013072300-msys-bin.meta'
-    root base_path
-  end
-
-  mingw_get 'msys core extensions' do
-    package 'msys-core-utils-ext=5.97-3-*'
-    root base_path
-  end
-
-  mingw_get 'msys perl' do
-    package 'msys-perl-bin=5.8.8-*'
-    root base_path
-  end
-
-  directory tool32_path
-
-  directory tool64_path
-
-  ruby_block 'copy base files into tool32 and tool64' do
-    block do
-      ::FileUtils.cp_r("#{base_path}/.", tool32_path)
-      ::FileUtils.cp_r("#{base_path}/.", tool64_path)
+if tool32_path
+  potentially_at_compile_time do
+    mingw_tdm_gcc 'TDM GCC 32-bit with SJLJ' do
+      version '5.1.0'
+      flavor :sjlj_32
+      root tool32_path
     end
   end
+end
 
-  mingw_tdm_gcc 'TDM GCC 32-bit with SJLJ' do
-    version '5.1.0'
-    flavor :sjlj_32
-    root tool32_path
-  end
-
-  mingw_tdm_gcc 'TDM GCC 64-bit with SJLJ/SEH' do
-    version '5.1.0'
-    flavor :seh_sjlj_64
-    root tool64_path
+if tool64_path
+  potentially_at_compile_time do
+    mingw_tdm_gcc 'TDM GCC 64-bit with SJLJ/SEH' do
+      version '5.1.0'
+      flavor :seh_sjlj_64
+      root tool64_path
+    end
   end
 end
