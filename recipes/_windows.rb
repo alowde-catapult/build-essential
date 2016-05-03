@@ -20,12 +20,10 @@
 node.default['seven_zip']['syspath'] = true
 include_recipe 'seven_zip::default'
 
-tool32_path = node['build-essential']['mingw32']['path'] if node['build-essential']['mingw32']
-tool64_path = node['build-essential']['mingw64']['path'] if node['build-essential']['mingw64']
-tool32_path = nil if tool32_path == ''
-tool64_path = nil if tool64_path == ''
+tool32_path = node['build-essential']['mingw32']['path']
+tool64_path = node['build-essential']['mingw64']['path']
 
-[tool32_path, tool64_path].compact.each do |tool_path|
+[tool32_path, tool64_path].each do |tool_path|
   potentially_at_compile_time do
     directory tool_path do
       action :create
@@ -63,22 +61,16 @@ tool64_path = nil if tool64_path == ''
   end
 end
 
-if tool32_path
-  potentially_at_compile_time do
-    mingw_tdm_gcc 'TDM GCC 32-bit with SJLJ' do
-      version '5.1.0'
-      flavor :sjlj_32
-      root tool32_path
-    end
+potentially_at_compile_time do
+  mingw_tdm_gcc 'TDM GCC 32-bit with SJLJ' do
+    version '5.1.0'
+    flavor :sjlj_32
+    root tool32_path
   end
-end
 
-if tool64_path
-  potentially_at_compile_time do
-    mingw_tdm_gcc 'TDM GCC 64-bit with SJLJ/SEH' do
-      version '5.1.0'
-      flavor :seh_sjlj_64
-      root tool64_path
-    end
+  mingw_tdm_gcc 'TDM GCC 64-bit with SJLJ/SEH' do
+    version '5.1.0'
+    flavor :seh_sjlj_64
+    root tool64_path
   end
 end
