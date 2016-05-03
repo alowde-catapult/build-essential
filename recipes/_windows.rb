@@ -58,9 +58,8 @@ tool64_path = nil if tool64_path == ''
     end
 
     remote_file "#{tool_path}\\bin\\tar.exe" do
-      source "file:///#{tool_path.gsub('\\', '/')}/bin/bsdtar.exe"
+      source "file:///#{tool_path.tr('\\', '/')}/bin/bsdtar.exe"
     end
-
   end
 end
 

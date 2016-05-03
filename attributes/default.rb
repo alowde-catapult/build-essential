@@ -20,4 +20,3 @@
 default['build-essential']['compile_time'] = false
 default['build-essential']['mingw32']['path'] = "#{ENV['SYSTEMDRIVE']}\\mingw32"
 default['build-essential']['mingw64']['path'] = "#{ENV['SYSTEMDRIVE']}\\mingw64"
-
