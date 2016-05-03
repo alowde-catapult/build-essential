@@ -22,6 +22,8 @@ include_recipe 'seven_zip::default'
 
 tool32_path = node['build-essential']['mingw32']['path'] if node['build-essential']['mingw32']
 tool64_path = node['build-essential']['mingw64']['path'] if node['build-essential']['mingw64']
+tool32_path = nil if tool32_path == ''
+tool64_path = nil if tool64_path == ''
 
 [tool32_path, tool64_path].compact.each do |tool_path|
   potentially_at_compile_time do
